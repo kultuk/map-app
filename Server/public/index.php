@@ -81,7 +81,7 @@ $app->post('/locations/add', function (Request $request, Response $response, $ar
     $userID = $userData->id;
     $lat = $body['lat'];
     $lng = $body['lng'];
-    $userExists = $users->checkIfExists($userData->username);
+    $userExists = $users->checkIfExists($userData->un);
     if($userID == null || $lng == null || $lat == null 
         || is_nan($userID) || is_nan($lng) || is_nan($lat) 
         || !$userExists){

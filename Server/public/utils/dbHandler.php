@@ -19,8 +19,4 @@ class db {
         return file_put_contents(DB_FILE_LOCATION,$content);
     }
 
-    // function addFileData($content) {
-    //     $currentData = $this->getFileData();
-    //     return file_put_contents(DB_FILE_LOCATION,$currentData.$content);
-    // }
 }
