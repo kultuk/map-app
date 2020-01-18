@@ -17,6 +17,8 @@ for the client side, inside the client folder run
 npm run serve
 ```
 
+There's jwt key on the server files that should not be used on production. 
+
 # API
 
 Both the `/register` and the `/login` methods return a jwt token (`auth_token`) on the body of the response.
