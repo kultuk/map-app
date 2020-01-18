@@ -2,27 +2,26 @@ import Vue from 'vue'
 import App from './App.vue'
 import Buefy from 'buefy'
 import 'buefy/dist/buefy.css'
-
-// import routes from './Handlers/routes'
-// import VueRouter from 'vue-router'
-
+import * as VueGoogleMaps from 'vue2-google-maps'
+ 
 var setting = require('./config.json'); 
+var credentials = require('./creds.json'); 
 
 global.c = {
-  SERVER_LOCATIONS: setting.server.address + ":" + setting.server.port
+  SERVER_LOCATIONS: setting.server.address + ":" + setting.server.port 
 }
 
+Vue.use(VueGoogleMaps, {
+  load: {
+    key: credentials.GOOGLE_API_KEY
+  }
+})
 Vue.use(Buefy);
-// Vue.use(VueRouter);
-// const router = new VueRouter({
-//   routes // short for `routes: routes`
-// })
 Vue.config.productionTip = false
 
 
 new Vue({  
   render: h => h(App),
-  // router
 }).$mount('#app')
 
 
