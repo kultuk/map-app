@@ -30,9 +30,10 @@ export default  {
     },
     async addLocation({lng,lat}){
         var token = localStorage.getItem('auth_token')
-        var addURL = global.c.SERVER_LOCATIONS +"/locations/lat/" + parseInt(lat,10) + "/lng/"+parseInt(lng,10);    
+        var addURL = global.c.SERVER_LOCATIONS +"/locations/add";    
         return fetch(addURL,{
-            method:'GET',
+            method:'POST',
+            body: JSON.stringify({lat,lng}),
             headers: {
                 "auth-token": token 
             }

@@ -69,7 +69,7 @@ $app->post('/register', function (Request $request, Response $response, $args) {
     $password = $body['password'];
     $username = $body['username'];
     if($users->checkIfExists($username)){
-
+        
         $response->getBody()->write(getError('User already exists'));
         return enableCORS($response);
     }
@@ -98,12 +98,13 @@ $app->get('/locations', function (Request $request, Response $response, $args) {
     return enableCORS($response);
 });
 
-$app->get('/locations/lat/{lat:[0-9]+}/lng/{lng:[0-9]+}', function (Request $request, Response $response, $args) {
+$app->post('/locations/add', function (Request $request, Response $response, $args) {
+    $body = json_decode($request->getBody(), TRUE);
     $users = new users();
     $userData = $users->checkUserToken($request);
     $userID = $userData->id;
-    $lat = $args['lat'];
-    $lng = $args['lng'];
+    $lat = $body['lat'];
+    $lng = $body['lng'];
     if(is_nan($userID) || is_nan($lng) || is_nan($lat)){
         $response->getBody()->write(getError('invalid data'));
         return enableCORS($response);
