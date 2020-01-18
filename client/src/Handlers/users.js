@@ -13,13 +13,13 @@ export default  {
         }).then(function (result) {
             var jsonPromise = result.json() 
             jsonPromise.then(login=>{
-                localStorage.setItem('auth_token',login.accessToken);
+                localStorage.setItem(global.c.TOKEN_STORAGE_NAME,login.accessToken);
             });
             return jsonPromise
         })
     },
     async getLocations(){
-        var token = localStorage.getItem('auth_token')
+        var token = localStorage.getItem(global.c.TOKEN_STORAGE_NAME)
         return fetch(global.c.SERVER_LOCATIONS +"/locations",{
             method:'GET',
             headers: {
@@ -29,7 +29,7 @@ export default  {
         ).then(res=>res.json());
     },
     async addLocation({lng,lat}){
-        var token = localStorage.getItem('auth_token')
+        var token = localStorage.getItem(global.c.TOKEN_STORAGE_NAME)
         var addURL = global.c.SERVER_LOCATIONS +"/locations/add";    
         return fetch(addURL,{
             method:'POST',
@@ -41,6 +41,6 @@ export default  {
         ).then(res=>res.json());
     },
     logout(){
-        localStorage.removeItem("auth_token");
+        localStorage.removeItem(global.c.TOKEN_STORAGE_NAME);
     }
 }

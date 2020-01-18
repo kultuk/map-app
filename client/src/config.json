@@ -2,5 +2,6 @@
     "server": {
         "address" : "http://localhost",
         "port": 8888
-    }
+    },
+    "TOKEN_STORAGE_NAME": "auth_token"
 } 

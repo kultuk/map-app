@@ -7,7 +7,7 @@ import * as VueGoogleMaps from 'vue2-google-maps'
 var setting = require('./config.json'); 
 var credentials = require('./creds.json'); 
 
-global.c = {
+global.c = {...setting,
   SERVER_LOCATIONS: setting.server.address + ":" + setting.server.port 
 }
 

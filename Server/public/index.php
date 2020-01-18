@@ -2,54 +2,30 @@
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
-// use \Firebase\JWT\JWT;
 
 include('utils\users.php');
 include('utils\extenstions.php');
 
 require __DIR__ . '/../vendor/autoload.php';
-
-/**
- * Instantiate App
- *
- * In order for the factory to work you need to ensure you have installed
- * a supported PSR-7 implementation of your choice e.g.: Slim PSR-7 and a supported
- * ServerRequest creator (included with Slim PSR-7)
- */
 $app = AppFactory::create();
-
-// Add Routing Middleware
 $app->addRoutingMiddleware();
-
-/**
- * Add Error Handling Middleware
- *
- * @param bool $displayErrorDetails -> Should be set to false in production
- * @param bool $logErrors -> Parameter is passed to the default ErrorHandler
- * @param bool $logErrorDetails -> Display error details in error log
- * which can be replaced by a callable of your choice.
- 
- * Note: This middleware should be added last. It will not handle any exceptions/errors
- * for middleware added after it.
- */
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 
 
 $app->options('/{routes:.+}', function ($request, $response, $args) {
-    return enableCORS($response);
+    return addGeneralHeaders($response);
 });
 
-// Define app routes
 $app->post('/login', function (Request $request, Response $response, $args) {
     $body = json_decode($request->getBody(), TRUE);
-    // echo json_encode($body);
+    
     $users = new users();
     $password = $body['password'];
     $username = $body['username'];
     $user = $users->getByUsername($username);
-    // echo $user->password.' '.password_hash($password,PASSWORD_DEFAULT);
+    
     if($user ==  null){
-        $response->getBody()->write(getError('Invalid username'));
+        $response->getBody()->write(getError('Invalid username',true));
     }else if(password_verify ($password,$user->password)){
         $authToken = $users->getUserToken($user);
         
@@ -58,46 +34,46 @@ $app->post('/login', function (Request $request, Response $response, $args) {
             'accessToken' => $authToken
         )));
     }else{
-        $response->getBody()->write(getError('Wrong password'));
+        $response->getBody()->write(getError('Wrong password',true));
     }
-    return enableCORS($response);
+    return addGeneralHeaders($response);
 });
 $app->post('/register', function (Request $request, Response $response, $args) {
     $body = json_decode($request->getBody(), TRUE);
-    // echo json_encode($body);
+    
     $users = new users();
     $password = $body['password'];
     $username = $body['username'];
     if($users->checkIfExists($username)){
         
-        $response->getBody()->write(getError('User already exists'));
-        return enableCORS($response);
+        $response->getBody()->write(getError('User already exists',true));
+        return addGeneralHeaders($response);
     }
     $authToken = $users->register($username,$password);
     $response->getBody()->write(json_encode(array(
         'success'  => true,
         'accessToken' => $authToken
     )));
-    return enableCORS($response);
+    return addGeneralHeaders($response);
 });
 
-// Define app routes
+//get all the locations of the user
 $app->get('/locations', function (Request $request, Response $response, $args) {
     $users = new users();
     $userData = $users->checkUserToken($request);
-    // echo json_encode($userData);
+    
     $id = $userData->id;
-    if(is_numeric($id)){
-        // echo $id;
+    if($id != null && is_numeric($id) || $users->checkIfExists($userData->username)){
         $locations = $users->getLocations($id);
         $response->getBody()->write(json_encode($locations));
     }else{
         
-        $response->getBody()->write(getError('invalid id: '.$id));
+        $response->getBody()->write(getError('invalid id: '.$id, true));
     }
-    return enableCORS($response);
+    return addGeneralHeaders($response);
 });
 
+//adds a location to the user's list
 $app->post('/locations/add', function (Request $request, Response $response, $args) {
     $body = json_decode($request->getBody(), TRUE);
     $users = new users();
@@ -105,15 +81,19 @@ $app->post('/locations/add', function (Request $request, Response $response, $ar
     $userID = $userData->id;
     $lat = $body['lat'];
     $lng = $body['lng'];
-    if(is_nan($userID) || is_nan($lng) || is_nan($lat)){
-        $response->getBody()->write(getError('invalid data'));
-        return enableCORS($response);
+    $userExists = $users->checkIfExists($userData->username);
+    if($userID == null || $lng == null || $lat == null 
+        || is_nan($userID) || is_nan($lng) || is_nan($lat) 
+        || !$userExists){
+        
+        $response->getBody()->write(getError('invalid data',!$userExists));
+        return addGeneralHeaders($response);
     }
     $wasSaved = $users->addLocations($userID,$lng,$lat);
     $response->getBody()->write(json_encode(array(
         'success' => $wasSaved
     )));
-    return enableCORS($response);
+    return addGeneralHeaders($response);
 });
 // Run app
 $app->run();

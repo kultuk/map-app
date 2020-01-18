@@ -1,9 +1,6 @@
 <template>
   <div class="container">
     <b-button type="is-primary" class="logout-btn" @click="logout">Logout</b-button>
-    <!-- <ul>
-        <li v-for="location in locations" :key="location.lng + ':' + location.lat">{{location.lng + ':' + location.lat}}</li>
-    </ul> -->
     <div class="map-wrap">
         <GmapMap
             :center="{lat:32.79282903947754, lng:35.038893926862364}"
@@ -22,7 +19,6 @@
             />
             </GmapMap>
     </div>
-    <!-- <b-button type="is-info" @click="addLocation">addLocation</b-button> -->
   </div>
 </template>
 
@@ -33,11 +29,13 @@ import { ToastProgrammatic as Toast } from 'buefy'
 
 export default {
   name: 'Locations',
-  props: {
-    msg: String
-  },
   created(){
-      $users.getLocations().then(locations=> {this.locations = locations});
+      $users.getLocations().then(locations=> {
+            if(locations.invalidToken){
+                this.logout();
+            }
+          this.locations = locations
+          });
   },
   data(){
       this.locations = this.locations || []
@@ -60,13 +58,16 @@ export default {
             var location = {lat:event.latLng.lat(), lng:event.latLng.lng()}
           Toast.open("Location Saved!");
           this.locations.push(location);
-          $users.addLocation(location);
+          $users.addLocation(location).then(result=>{
+              if(!result.success && result.invalidToken){
+                this.logout();
+              }
+          });
       }
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 #map {
     overflow:hidden;

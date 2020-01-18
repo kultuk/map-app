@@ -4,13 +4,20 @@ include('utils\dbHandler.php');
 include('utils\creds.php');
 
 class users {
+
+    //checks if the auth token recieved is valid
     function checkUserToken($request)
     {
         $token = $request->getHeader('auth-token')[0];
-        // echo gettype($token);
-        $userData = JWT::decode($token, JWT_KEY,array('HS256'));
-        return $userData;
+        
+        try{
+            $userData = JWT::decode($token, JWT_KEY,array('HS256'));
+            return $userData;
+        }catch(\Exception $e){
+            return array();
+        }
     }
+    //creating a jwt for the user
     function getUserToken($user)
     {
         $user = (array) $user;
@@ -21,6 +28,7 @@ class users {
         echo $user->id;
         return JWT::encode($creds, JWT_KEY);
     }
+    //adding a new user
     function register($username,$password){
         $users = $this->getAll();
         $newUserID = count($users) +1;
@@ -36,10 +44,13 @@ class users {
         
         return $authToken;
     }
+    //search for a user with the same username
     function checkIfExists($username){
         $user = $this->getByUsername($username);
         return $user != null; 
     }
+
+    //returns the user with the same username
     function getByUsername($username)
     {
         $users = $this->getAll();
@@ -50,6 +61,8 @@ class users {
         }
         return null;
     }
+
+    //returns the user with the same id
     function getUser($userID){
         $users = $this->getAll();
         foreach ($users as $user) {
@@ -59,16 +72,22 @@ class users {
         }
         return null;
     }
+
+    //returs all the users form the db
     function getAll()
     {
         $db = new db();
         return $db->getJsonData(); 
     }
+
+    //updates the db with the current list of users
     function save($users = null)
     {
         $db = new db();
         $db->saveJsonData($users);
     }
+
+    //returns the locations list of the given user
     function getLocations($userID){
         $user = $this->getUser($userID);
         if($user != null){
@@ -77,6 +96,8 @@ class users {
         
         return [];
     }
+
+    //adds a locations for the user
     function addLocations($userID,$lng,$lat){
         $users = $this->getAll();
         foreach ($users as $user) {
@@ -91,8 +112,5 @@ class users {
             }
         }
         return false;
-    }
-    function findUser($userID){
-
     }
 }

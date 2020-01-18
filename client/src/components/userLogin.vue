@@ -28,10 +28,6 @@ import $users from '../Handlers/users';
 
 export default {
   name: 'userLogin',
-  props: {
-    msg: String
-    
-  },
   data: function () {
     var password,username,register;
     return {password,username,register}
@@ -41,7 +37,6 @@ export default {
         this.register = !this.register
       },
       login: function () {
-      // alert(global.c.SERVER_LOCATIONS)
       $users.login(this.username,this.password, this.register).then(
         login=>{
           var message;
@@ -58,7 +53,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
     .login-form {
         width: 50%;
