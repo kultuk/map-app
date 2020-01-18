@@ -35,15 +35,29 @@ $app->addRoutingMiddleware();
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 
 // Define app routes
-    $app->get('/test', function (Request $request, Response $response, $args) {
-
-        // $test = array('data'=>56);
-        // $token = JWT::encode($test,'JWT_KEY');
-        // $data  = JWT::decode($token,'JWT_KEY', array('HS256'));
-        // $response->getBody()->write(json_encode($data));
-        return $response;
-    });
-    $app->post('/register', function (Request $request, Response $response, $args) {
+$app->post('/login', function (Request $request, Response $response, $args) {
+    $body = json_decode($request->getBody(), TRUE);
+    // echo json_encode($body);
+    $users = new users();
+    $password = $body['password'];
+    $username = $body['username'];
+    $user = $users->getByUsername($username);
+    // echo $user->password.' '.password_hash($password,PASSWORD_DEFAULT);
+    if($user ==  null){
+        $response->getBody()->write(getError('Invalid username'));
+    }else if(password_verify ($password,$user->password)){
+        $authToken = $users->getUserToken($user);
+        
+        $response->getBody()->write(json_encode(array(
+            'success'  => true,
+            'accessToken' => $authToken
+        )));
+    }else{
+        $response->getBody()->write(getError('Wrong password'));
+    }
+    return enableCORS($response);
+});
+$app->post('/register', function (Request $request, Response $response, $args) {
     $body = json_decode($request->getBody(), TRUE);
     // echo json_encode($body);
     $users = new users();
@@ -52,14 +66,14 @@ $errorMiddleware = $app->addErrorMiddleware(true, true, true);
     if($users->checkIfExists($username)){
 
         $response->getBody()->write(getError('User already exists'));
-        return $response;
+        return enableCORS($response);
     }
-    $newUserID = $users->register($username,$password);
+    $authToken = $users->register($username,$password);
     $response->getBody()->write(json_encode(array(
         'success'  => true,
-        'accessToken' => $newUserID
+        'accessToken' => $authToken
     )));
-    return $response;
+    return enableCORS($response);
 });
 
 // Define app routes
@@ -76,7 +90,7 @@ $app->get('/locations', function (Request $request, Response $response, $args) {
         
         $response->getBody()->write(getError('invalid id: '.$id));
     }
-    return $response;
+    return enableCORS($response);
 });
 
 $app->get('/locations/lan/{lan:[0-9]+}/lon/{lon:[0-9]+}', function (Request $request, Response $response, $args) {
@@ -87,13 +101,13 @@ $app->get('/locations/lan/{lan:[0-9]+}/lon/{lon:[0-9]+}', function (Request $req
     $lon = $args['lon'];
     if(is_nan($userID) || is_nan($lon) || is_nan($lan)){
         $response->getBody()->write(getError('invalid data'));
-        return $response;
+        return enableCORS($response);
     }
     $wasSaved = $users->addLocations($userID,$lon,$lan);
     $response->getBody()->write(json_encode(array(
         'success' => $wasSaved
     )));
-    return $response;
+    return enableCORS($response);
 });
 // Run app
 $app->run();

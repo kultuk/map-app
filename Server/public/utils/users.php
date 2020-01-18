@@ -13,6 +13,7 @@ class users {
     }
     function getUserToken($user)
     {
+        $user = (array) $user;
         $creds = array(
             'id'=> $user['id'] ,
             'un'=> $user['username']
@@ -35,15 +36,19 @@ class users {
         
         return $authToken;
     }
-    function checkIfExists($username)
+    function checkIfExists($username){
+        $user = $this->getByUsername($username);
+        return $user != null; 
+    }
+    function getByUsername($username)
     {
         $users = $this->getAll();
         foreach ($users as $user) {
             if($user->username == $username){
-                return true;
+                return $user;
             }
         }
-        return false;
+        return null;
     }
     function getUser($userID){
         $users = $this->getAll();
