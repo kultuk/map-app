@@ -2,3 +2,6 @@
 Server/public/utils/creds.php
 Server/vendor
 client/node_modules
+Server/public/utils/creds.php
+Server/public/utils/db.json
+client/creds.json
