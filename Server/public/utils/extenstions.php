@@ -9,5 +9,6 @@ function getError($message){
 function enableCORS($response){
     return $response
             ->withHeader('Access-Control-Allow-Origin', '*')
+            ->withHeader('Access-Control-Allow-Headers', 'auth-token')
             ->withHeader('Content-Type', 'application/json');
 }

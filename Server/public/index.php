@@ -34,6 +34,11 @@ $app->addRoutingMiddleware();
  */
 $errorMiddleware = $app->addErrorMiddleware(true, true, true);
 
+
+$app->options('/{routes:.+}', function ($request, $response, $args) {
+    return enableCORS($response);
+});
+
 // Define app routes
 $app->post('/login', function (Request $request, Response $response, $args) {
     $body = json_decode($request->getBody(), TRUE);
@@ -93,17 +98,17 @@ $app->get('/locations', function (Request $request, Response $response, $args) {
     return enableCORS($response);
 });
 
-$app->get('/locations/lan/{lan:[0-9]+}/lon/{lon:[0-9]+}', function (Request $request, Response $response, $args) {
+$app->get('/locations/lat/{lat:[0-9]+}/lon/{lon:[0-9]+}', function (Request $request, Response $response, $args) {
     $users = new users();
     $userData = $users->checkUserToken($request);
     $userID = $userData->id;
-    $lan = $args['lan'];
+    $lat = $args['lat'];
     $lon = $args['lon'];
-    if(is_nan($userID) || is_nan($lon) || is_nan($lan)){
+    if(is_nan($userID) || is_nan($lon) || is_nan($lat)){
         $response->getBody()->write(getError('invalid data'));
         return enableCORS($response);
     }
-    $wasSaved = $users->addLocations($userID,$lon,$lan);
+    $wasSaved = $users->addLocations($userID,$lon,$lat);
     $response->getBody()->write(json_encode(array(
         'success' => $wasSaved
     )));
