@@ -77,13 +77,13 @@ class users {
         
         return [];
     }
-    function addLocations($userID,$lon,$lat){
+    function addLocations($userID,$lng,$lat){
         $users = $this->getAll();
         foreach ($users as $user) {
             if($user->id == $userID){
                 // $locations = $user->locations;
                 array_push($user->locations, array(
-                    'lon' => $lon,
+                    'lng' => $lng,
                     'lat' => $lat
                 ));
                 $this->save();

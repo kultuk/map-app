@@ -98,17 +98,17 @@ $app->get('/locations', function (Request $request, Response $response, $args) {
     return enableCORS($response);
 });
 
-$app->get('/locations/lat/{lat:[0-9]+}/lon/{lon:[0-9]+}', function (Request $request, Response $response, $args) {
+$app->get('/locations/lat/{lat:[0-9]+}/lng/{lng:[0-9]+}', function (Request $request, Response $response, $args) {
     $users = new users();
     $userData = $users->checkUserToken($request);
     $userID = $userData->id;
     $lat = $args['lat'];
-    $lon = $args['lon'];
-    if(is_nan($userID) || is_nan($lon) || is_nan($lat)){
+    $lng = $args['lng'];
+    if(is_nan($userID) || is_nan($lng) || is_nan($lat)){
         $response->getBody()->write(getError('invalid data'));
         return enableCORS($response);
     }
-    $wasSaved = $users->addLocations($userID,$lon,$lat);
+    $wasSaved = $users->addLocations($userID,$lng,$lat);
     $response->getBody()->write(json_encode(array(
         'success' => $wasSaved
     )));

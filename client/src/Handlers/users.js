@@ -28,9 +28,9 @@ export default  {
         }
         ).then(res=>res.json());
     },
-    async addLocation({lon,lat}){
+    async addLocation({lng,lat}){
         var token = localStorage.getItem('auth_token')
-        var addURL = global.c.SERVER_LOCATIONS +"/locations/lat/" + parseInt(lat,10) + "/lon/"+parseInt(lon,10);    
+        var addURL = global.c.SERVER_LOCATIONS +"/locations/lat/" + parseInt(lat,10) + "/lng/"+parseInt(lng,10);    
         return fetch(addURL,{
             method:'GET',
             headers: {

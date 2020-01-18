@@ -2,7 +2,7 @@
   <div class="hello">
     <b-button type="is-primary" @click="logout">Logout</b-button>
     <ul>
-        <li v-for="location in locations" :key="location.lon + ':' + location.lat">{{location.lon + ':' + location.lat}}</li>
+        <li v-for="location in locations" :key="location.lng + ':' + location.lat">{{location.lng + ':' + location.lat}}</li>
     </ul>
     <b-button type="is-info" @click="addLocation">addLocation</b-button>
   </div>
@@ -30,7 +30,7 @@ export default {
       },
       addLocation(){
           var location = {
-              lon: 88,
+              lng: 88,
               lat: 99
           }
           this.locations.push(location);
