@@ -1,6 +1,7 @@
 <template>
   <div class="login-form">
     <section>
+        <b-button type="is-light" @click="toggleRegister">{{this.register ? "Already has a user?" : "New User?"}}</b-button>
         <form>
             <b-field label="Username"
                 type="is-success">
@@ -14,6 +15,7 @@
                 </b-input>
             </b-field>
             <b-button v-if="!register" type="is-primary" @click="login">Login</b-button>
+
             <b-button v-if="register" type="is-primary" @click="login">Register</b-button>
         </form>
     </section>
@@ -27,22 +29,25 @@ import $users from '../Handlers/users';
 export default {
   name: 'userLogin',
   props: {
-    msg: String,
-    register: Boolean
+    msg: String
+    
   },
   data: function () {
-    var password,username;
-    return {password,username}
+    var password,username,register;
+    return {password,username,register}
   },
   methods:{
-    login: function () {
+      toggleRegister: function () {
+        this.register = !this.register
+      },
+      login: function () {
       // alert(global.c.SERVER_LOCATIONS)
       $users.login(this.username,this.password, this.register).then(
         login=>{
           var message;
           if(login.success){
             message = 'success!'; 
-            localStorage.setItem('auth_token',login.accessToken);
+            this.$parent.authToken = login.accessToken;
           }else{
             message= login.error;
           }
