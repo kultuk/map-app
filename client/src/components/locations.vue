@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div >
     <b-button type="is-primary" class="logout-btn" @click="logout">Logout</b-button>
     <div class="map-wrap">
         <GmapMap
@@ -8,7 +8,7 @@
             map-type-id="terrain"
             id="map"
             @click="addLocation"
-            >
+            > 
             <GmapMarker
                 :key="index"
                 v-for="(m, index) in markers"
@@ -73,9 +73,8 @@ export default {
     overflow:hidden;
     padding-bottom:56.25%;
     position:relative;
-    height:0;
-    max-width: 500px; 
-    max-height: 300px; 
+    height:100vh;
+    width:100%;
     margin: auto;
 }
 #map iframe{
@@ -85,5 +84,5 @@ export default {
     width:100%;
     position:absolute;
 }
-button.logout-btn {position: absolute;top: 13px;left: calc(50% - 76px);z-index: 2;}
+button.logout-btn {position: absolute;top: calc(92%);left: calc(50% - 76px);z-index: 2;}
 </style>
